@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sheet Metal Parts Creator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    label { display: block; margin: 10px 0; }
+    #preview { border: 1px solid #ccc; margin-top: 20px; }
+    button { margin-top: 10px; padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <h1>Create Your Part</h1>
+  
+  <label for="template">Choose a Template:</label>
+  <select id="template">
+    <option value="plate">Flat Plate</option>
+    <option value="lbracket">L-Bracket</option>
+  </select>
+
+  <div id="form">
+    <label>Length (mm): <input type="number" id="length" value="100" min="10" max="1000"></label>
+    <label>Width (mm): <input type="number" id="width" value="50" min="10" max="1000"></label>
+  </div>
+
+  <svg id="preview" width="300" height="300"></svg>
+  
+  <button onclick="updatePreview()">Update Preview</button>
+  <button onclick="downloadSVG()">Download SVG</button>
+
+  <script>
+    function updatePreview() {
+      const template = document.getElementById("template").value;
+      const length = document.getElementById("length").value;
+      const width = document.getElementById("width").value;
+      const svg = document.getElementById("preview");
+
+      // Clear existing SVG content
+      svg.innerHTML = "";
+
+      if (template === "plate") {
+        svg.innerHTML = `<rect x="0" y="0" width="${length}" height="${width}" fill="none" stroke="black" stroke-width="1"/>`;
+      } else if (template === "lbracket") {
+        svg.innerHTML = `
+          <rect x="0" y="0" width="${length}" height="${width}" fill="none" stroke="black" stroke-width="1"/>
+          <rect x="0" y="${width}" width="${width}" height="${length}" fill="none" stroke="black" stroke-width="1"/>
+        `;
+      }
+    }
+
+    function downloadSVG() {
+      const svg = document.getElementById("preview").outerHTML;
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "part.svg";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Initial preview
+    updatePreview();
+  </script>
+</body>
+</html>
